@@ -251,13 +251,13 @@ const imagesList = [
 class Matches extends Component {
   state = {
     activeTabId: tabsList[0].tabId,
-    randomList: imagesList[0],
+    activeImageId:imagesList[0].id,
     isGameInProgress: true,
     timeInSeconds: 60,
     score: 0,
   }
   componentDidMount() {
-    this.setState({randomList: imagesList[0]})
+    this.setState({activeImageId: imagesList[0].id})
   }
   clickTabItem = tabId => {
     this.setState({activeTabId: tabId})
@@ -287,7 +287,7 @@ class Matches extends Component {
   resetGame = () => {
     this.setState({
       activeTabId: tabsList[0].tabId,
-      randomList: imagesList[0],
+      activeImageId:imagesList[0].id,
       isGameInProgress: true,
       timeInSeconds: 60,
       score: 0,
@@ -302,19 +302,25 @@ class Matches extends Component {
     if (id === randomList.id) {
       this.setState(prevState => ({
         score: prevState.score + 1,
-        randomList:
-          imagesList[Math.floor(Math.random() * imagesList.length - 1)],
+        activeImageId:
+          imagesList[Math.floor(Math.random() * imagesList.length - 1)].id,
       }))
     }
     this.clearTimerInterval()
     this.finishGame(score)
   }
+  filterImage=()=>{
+    const {activeImageId}=this.state
+    const filteredImages=imagesList.filter((eachImage)=>eachImage.id===activeImageId)
+    return filteredImages
+  }
   renderMatchItem = () => {
-    const {activeTabId, randomList} = this.state
+    const {activeTabId, activeImageId} = this.state
     const filteredProjects = this.getFilteredItems()
+    const filteredImages=this.filterImage()
     return (
       <div className="bottom-section">
-        <img src={randomList.imageUrl} alt="match" className="image" />
+      {filteredImages.map((eachImage)=><img key={eachImage.id} src={eachImage.imageUrl} alt="match"/>)}
         <ul className="tabs-list">
           {tabsList.map(eachTab => (
             <TabItem
